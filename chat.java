@@ -59,9 +59,9 @@ public class chat {
 		one.Register();
 			
 	}
-	else if(userInput.equals("R")) {
+	else if(userInput.equals("L")) {
 		
-		
+		one.LoggingIn();
 
 	}
 	
