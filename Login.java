@@ -15,6 +15,7 @@ public class Login {
 		resultSet = null;
 	}
 	
+	//Counts the number of items within the data table called accounts.
 	public int counter() {
 		
 		try {
@@ -32,6 +33,9 @@ public class Login {
 		}
 	}
 	
+	/*Inputs a new username with password into the data table(accounts). The username will only be inputted if 
+	 * it does not already exist in the data table (accounts);
+	*/
 	public void Register() {
 		
 		
@@ -54,11 +58,14 @@ public class Login {
 				prepStmt.setString(3, password);
 			
 				prepStmt.executeUpdate();
+				System.out.println();
 				System.out.println("Sucessfully registered.");
 				System.out.println();
 			}
 			else {
-				System.out.println("Username already exists.");
+				System.out.println();
+				System.out.println("Username already exists.\nPlease enter a different username.");
+				
 				System.out.println();
 				Register();
 			}
@@ -69,6 +76,7 @@ public class Login {
 		
 	}
 	
+	//Returns true if the username already exists within the data table(accounts).
 	public boolean duplicate(String name) {
 		boolean a = false;
 		try {
@@ -92,11 +100,12 @@ public class Login {
 		return a;
 	}
 	
-	// Not finished with this method yet.
+	/*Checks whether or not the username and password inputted by the user exists in the data table.*/
 	public void LoggingIn() {
 			try {
 			String name = null; 
 			String password = null;
+			
 			System.out.print("Username: ");
 			name = scnr.next();
 			
@@ -123,18 +132,21 @@ public class Login {
 				
 
 				if(password.equals(correctPassword)) {
-							System.out.println("Login successful");
+							System.out.println("\nWelcome " + name + "!!!");
 							System.out.println();
 						}
 						else {
-							System.out.println("Password is incorrect.");
+							System.out.println("Password is incorrect.\nPlease try again.");
 							System.out.println();
 							LoggingIn();
 						}
 				}
 			else {
-				System.out.println("Username is inccorect.");
-				System.out.println();
+				System.out.println("\nUsername is inccorect.\n");
+				System.out.println("Please enter your username.");
+				System.out.println("-----------------------------------------\n");
+				
+				
 				LoggingIn();
 			}
 			}catch(Exception e) {
