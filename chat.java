@@ -10,10 +10,13 @@ public class chat {
 		//Scanner scnr = new Scanner(System.in);
 		//String userInput = null;
 		
-		Login one = new Login();
-		ChatRoom room = new ChatRoom();
+		Table register = new Table();
 		
-	
+		
+		String tableOne = "accounts";
+		String tableTwo = "rooms";
+		
+	/*
 	try {
 		Class.forName("org.postgresql.Driver");
 		one.c = DriverManager.getConnection(
@@ -25,7 +28,7 @@ public class chat {
 		e.printStackTrace();
 		System.err.println(e.getClass().getName()+ ": " + e.getMessage());
 		System.exit(0);
-	}
+	}*/
 	
 	//Creates the table for the accounts.
 	/*
@@ -49,6 +52,7 @@ public class chat {
 	*/
 	
 	//Connecting to the database for Rooms table;
+		/*
 	try {
 		Class.forName("org.postgresql.Driver");
 		room.c = DriverManager.getConnection(
@@ -61,7 +65,7 @@ public class chat {
 		System.err.println(e.getClass().getName()+ ": " + e.getMessage());
 		System.exit(0);
 	}
-	
+	*/
 	
 	//Creates the table for the chat rooms.
 	/*
@@ -90,19 +94,22 @@ public class chat {
 	String input = mainDisplay();
 	if(input.equals("R")) {
 		
-		one.Register();
+		register.Register(tableOne);
 			
 	}
 	else if(input.equals("L")) {
 		
-		one.LoggingIn();
-		chatDisplay(room);
+		register.LoggingIn();
+		chatDisplay(register, tableTwo);
 
 	}
+	else if (input.equals("Q")) {
+		logOut();
+	}
 	
 	}
 	
-	public static void chatDisplay(ChatRoom room) {
+	public static void chatDisplay(Table room, String table) {
 		Scanner scnr = new Scanner(System.in);
 		System.out.println("Please select from the following options:\n(J)Join, (C)Create, (A)Account, (L)Logout\n-----------------------------------------\n");
 		
@@ -113,9 +120,16 @@ public class chat {
 			room.Join();
 		}
 		else if(selection.equals("C")) {
-			room.Create();
+			room.Create(table);
 		}
+		else if(selection.equals("A")) {
+			update(room);
+		}
+		
+		else if(selection.equals("L"));
+		logOut();
 	}
+	
 	
 	public static String mainDisplay() {
 		
@@ -134,4 +148,70 @@ public class chat {
 		return input;
 	}
 	
+	public static void update(Table name) {
+		Scanner scnr = new Scanner(System.in);
+		String tableName = "accounts";
+		String column = "username";
+		
+		try {
+			System.out.print("Change (U)sername or (P)assword: ");
+			String input = scnr.next();
+			
+			if (input.equals("U")) {
+				System.out.print("Enter your current username: ");
+				String currUser = scnr.next();
+				
+				System.out.print("Enter your new username(enter quit to leave): ");
+				String newUser = scnr.next();
+				
+				if (newUser.equals("quit")) {
+					chatDisplay(name, tableName);
+				}
+				
+				else if (name.duplicate(newUser, tableName,column )) {
+					System.out.println("Username already exists. Please choose a different username.");
+					update(name);
+				}
+				
+				else {
+					String updateUser = "UPDATE accounts SET name = newUser WHERE name = currUser";
+					name.stmt.executeQuery(updateUser);
+					System.out.println("Username changed!");
+					chatDisplay(name,tableName);
+				}
+				
+			}
+			
+			else {
+				System.out.print("Enter your current password: ");
+				String currPassword = scnr.next();
+				
+				System.out.print("Enter your new password(enter quit to leave): ");
+				String newPassword = scnr.next();
+				
+				if (newPassword.equals("quit")) {
+					chatDisplay(name, tableName);
+				}
+				
+				else {
+					String updatePassword = "UPDATE accounts SET password = newPassword WHERE password = currPassword";
+					name.stmt.executeQuery(updatePassword);
+					System.out.println("Password changed!");
+					chatDisplay(name, tableName);
+				}
+			}
+		}
+		
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void logOut() {
+		mainDisplay();
+	}
+	
+		
 }
