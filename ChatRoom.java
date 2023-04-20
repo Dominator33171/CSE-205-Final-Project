@@ -155,7 +155,7 @@ public class ChatRoom {
 		if(duplicate(name)==true) {
 			
 			System.out.println("\nWelcome to the chat room called " + name + "!!!");
-			System.out.println("\n" + username + " is now viewing chat window: " + name); // new change "need to run if it works"
+			System.out.println("\nYou are now viewing this chat window: " + name); // new change "need to run if it works" also need to find way to get username
 			}
 		else {
 			System.out.println("\nChat room does not exist or name was not entered correctly.\n");
