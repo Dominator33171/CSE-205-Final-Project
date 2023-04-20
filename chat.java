@@ -91,21 +91,10 @@ public class chat {
 	System.out.println("Welcome to my chat room!!!");
 	System.out.println();
 	
-	String input = mainDisplay();
-	if(input.equals("R")) {
-		
-		register.Register(tableOne);
-			
-	}
-	else if(input.equals("L")) {
-		
-		register.LoggingIn();
-		chatDisplay(register, tableTwo);
-
-	}
-	else if (input.equals("Q")) {
-		logOut();
-	}
+	mainDisplay(register);
+	
+	
+	
 	
 	}
 	
@@ -126,12 +115,16 @@ public class chat {
 			update(room);
 		}
 		
-		else if(selection.equals("L"));
-		logOut();
+		else if(selection.equals("L")) {
+		logOut(room);
+		}
 	}
 	
 	
-	public static String mainDisplay() {
+	public static void mainDisplay(Table name) {
+		
+		String tableOne = "accounts";
+		String tableTwo = "rooms";
 		
 		Scanner scnr = new Scanner(System.in);
 		
@@ -145,7 +138,23 @@ public class chat {
 		String input = scnr.next();
 		
 		System.out.println();
-		return input;
+		
+		
+		if(input.equals("R")) {
+			
+			name.Register(tableOne);
+				
+		}
+		else if(input.equals("L")) {
+			
+			name.LoggingIn();
+			chatDisplay(name, tableTwo);
+
+		}
+		else if (input.equals("Q")) {
+			logOut(name);
+		}
+
 	}
 	
 	public static void update(Table name) {
@@ -208,9 +217,9 @@ public class chat {
 		}
 		
 	}
-	
-	public static void logOut() {
-		mainDisplay();
+	//Possible error
+	public static void logOut(Table name) {
+		mainDisplay(name);
 	}
 	
 		

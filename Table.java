@@ -16,12 +16,16 @@ public class Table {
 	
 	private static ArrayList<String> chatHistory = new ArrayList<>();
     private static HashMap<String, Boolean> users = new HashMap<>();
+    
+    private String username;
 
 	
 	public Table() {
 		this.c = null;
 		this.stmt = null;
 		this.resultSet = null;
+		
+		this.username = null;
 
 		
 		try {
@@ -92,15 +96,15 @@ public class Table {
 				int count = counter(table);
 				
 				System.out.print("Username: ");
-				String name = scnr.next();
+				this.username = scnr.next();
 				
 							
-				if(duplicate(name, table, column)==false) {
+				if(duplicate(this.username, table, column)==false) {
 					System.out.print("Password: ");
 					String password = scnr.next();
 
 					prepStmt.setInt(1, count);
-					prepStmt.setString(2, name);
+					prepStmt.setString(2, this.username);
 					prepStmt.setString(3, password);
 				
 					prepStmt.executeUpdate();
@@ -147,16 +151,16 @@ public class Table {
 		
 		public void LoggingIn() {
 			try {
-			String name = null; 
+			
 			String password = null;
 			String table = "accounts";
 			String column = "username";
 			
 			System.out.print("Username: ");
-			name = scnr.next();
+			this.username = scnr.next();
 			
 					
-			if(duplicate(name, table,column )==true) {
+			if(duplicate(this.username, table,column )==true) {
 				
 				System.out.print("Password: ");
 				password = scnr.next();
@@ -168,7 +172,7 @@ public class Table {
 				this.resultSet = this.stmt.executeQuery("SELECT * FROM accounts");
 				
 				while( this.resultSet.next() && check == false) {
-					if(this.resultSet.getString("username").equals(name)) {
+					if(this.resultSet.getString("username").equals(this.username)) {
 						 correctPassword = resultSet.getString("password");
 						 
 						 check = true;
@@ -178,7 +182,7 @@ public class Table {
 				
 
 				if(password.equals(correctPassword)) {
-							System.out.println("\nWelcome " + name + "!!!");
+							System.out.println("\nWelcome " + this.username + "!!!");
 							System.out.println();
 						}
 						else {
@@ -295,24 +299,9 @@ public class Table {
 					
 			if(duplicate(name, table, column)==true) {
 				
-				System.out.println("\nWelcome to the chat room called " + name + "!!!");
-				
-				String message = scnr.nextLine();
-
-	            // Check if the message is a command
-	            if (message.startsWith("/")) {
-	                handleCommand(name, message);
-	            } else {
-	                // Add the message to the chat history
-	                chatHistory.add(name + ": " + message);
-
-	                // Print the message to all users in the chat room
-	                for (String user : users.keySet()) {
-	                    if (users.get(user)) {
-	                        System.out.println(name + ": " + message);
-	                    }
-	                }
-	            }
+				System.out.println("\nWelcome to the chat room called " + name + "!!!\n");
+				chatFeature(this.username);
+	            
 	        }
 	    
 		
@@ -326,6 +315,30 @@ public class Table {
 				
 			}
 	}
+		public void chatFeature(String name) {
+			//Check if the message is a command
+			System.out.print(name + ": ");
+			String message = scnr.next();
+			
+			 users.put(name, true);
+            if (message.startsWith("/")) {
+                handleCommand(name, message);
+            } else {
+                // Add the message to the chat history
+                chatHistory.add(name + ": " + message);
+                
+
+                // Print the message to all users in the chat room
+                /*
+                for (String user : users.keySet()) {
+                    if (users.get(user)) {
+                        System.out.println(name + ": " + message);
+                    }
+                }
+                */
+                chatFeature(name);
+            }
+		}
 
 		public void handleCommand(String username, String command) {
 	        if (command.equals("/list")) {
@@ -342,6 +355,7 @@ public class Table {
 	            System.out.println("You have left the chat room.");
 	        } else if (command.equals("/history")) {
 	            // Print all past messages for the chat room
+	        	System.out.println("\nChat history: \n");
 	            for (String message : chatHistory) {
 	                System.out.println(message);
 	            }
