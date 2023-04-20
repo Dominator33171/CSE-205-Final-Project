@@ -1,6 +1,8 @@
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.sql.*;
+import java.util.*;
 
 public class Table {
 	Scanner scnr = new Scanner(System.in);
@@ -11,6 +13,10 @@ public class Table {
 	String letters[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", 
 			"l", "m","n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 
 			"1", "2", "3","4","5","6","7","8","9","10"};
+	
+	private static ArrayList<String> chatHistory = new ArrayList<>();
+    private static HashMap<String, Boolean> users = new HashMap<>();
+
 	
 	public Table() {
 		this.c = null;
@@ -36,7 +42,7 @@ public class Table {
 	
 	/*
 	public void creatTable(String name) {
-		IF EXISTS accounts;
+		IF NOT EXISTS accounts;
 		
 		Begin
 		END
@@ -290,7 +296,26 @@ public class Table {
 			if(duplicate(name, table, column)==true) {
 				
 				System.out.println("\nWelcome to the chat room called " + name + "!!!");
-				}
+				
+				String message = scnr.nextLine();
+
+	            // Check if the message is a command
+	            if (message.startsWith("/")) {
+	                handleCommand(name, message);
+	            } else {
+	                // Add the message to the chat history
+	                chatHistory.add(name + ": " + message);
+
+	                // Print the message to all users in the chat room
+	                for (String user : users.keySet()) {
+	                    if (users.get(user)) {
+	                        System.out.println(name + ": " + message);
+	                    }
+	                }
+	            }
+	        }
+	    
+		
 			else {
 				System.out.println("\nChat room does not exist or name was not entered correctly.\n");
 				System.out.println();
@@ -301,6 +326,37 @@ public class Table {
 				
 			}
 	}
+
+		public void handleCommand(String username, String command) {
+	        if (command.equals("/list")) {
+	            // Print a list of users currently in the chat room
+	            System.out.println("Users in this chat room:");
+	            for (String user : users.keySet()) {
+	                if (users.get(user)) {
+	                    System.out.println(user);
+	                }
+	            }
+	        } else if (command.equals("/leave")) {
+	            // Remove the user from the chat room
+	            users.put(username, false);
+	            System.out.println("You have left the chat room.");
+	        } else if (command.equals("/history")) {
+	            // Print all past messages for the chat room
+	            for (String message : chatHistory) {
+	                System.out.println(message);
+	            }
+	        } else if (command.equals("/help")) {
+	            // Print the list of available commands
+	            System.out.println("Available commands:");
+	            System.out.println("/list - Returns a list of users currently in this chat room.");
+	            System.out.println("/leave - Exits the chat room.");
+	            System.out.println("/history - Prints all past messages for the chat room.");
+	            System.out.println("/help - Prints the list of available commands.");
+	        } else {
+	            // Invalid command
+	            System.out.println("Invalid command. Type /help for a list of available commands.");
+	        }
+	    }
 
 
 	

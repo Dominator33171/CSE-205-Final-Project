@@ -174,7 +174,7 @@ public class chat {
 				}
 				
 				else {
-					String updateUser = "UPDATE accounts SET name = newUser WHERE name = currUser";
+					String updateUser = "UPDATE accounts SET " +name +" = newUser WHERE "+name+" = currUser";
 					name.stmt.executeQuery(updateUser);
 					System.out.println("Username changed!");
 					chatDisplay(name,tableName);
@@ -194,7 +194,7 @@ public class chat {
 				}
 				
 				else {
-					String updatePassword = "UPDATE accounts SET password = newPassword WHERE password = currPassword";
+					String updatePassword = "UPDATE accounts SET password = "+newPassword+" WHERE password = "+currPassword;
 					name.stmt.executeQuery(updatePassword);
 					System.out.println("Password changed!");
 					chatDisplay(name, tableName);
