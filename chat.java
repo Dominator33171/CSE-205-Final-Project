@@ -16,10 +16,12 @@ public class chat {
 		String tableOne = "accounts";
 		String tableTwo = "rooms";
 		
+		
+		
 	/*
 	try {
 		Class.forName("org.postgresql.Driver");
-		one.c = DriverManager.getConnection(
+		cOther = DriverManager.getConnection(
 				"jdbc:postgresql://localhost:5432/usersdb",
 				"postgres","postgres");
 		System.out.println("Connected to the database.");
@@ -28,19 +30,19 @@ public class chat {
 		e.printStackTrace();
 		System.err.println(e.getClass().getName()+ ": " + e.getMessage());
 		System.exit(0);
-	}*/
+	}
 	
 	//Creates the table for the accounts.
-	/*
+	
 	try {
-		one.stmt = one.c.createStatement();
-		String sql = "CREATE TABLE ACCOUNTS" +
+		stmt = cOther.createStatement();
+		String sql = "CREATE TABLE HISTORY" +
 		"(ID INT PRIMARY KEY NOT NULL," +
 		" USERNAME TEXT NOT NULL," +
-		"PASSWORD TEXT NOT NULL)";
-		one.stmt.executeUpdate(sql);
-		one.stmt.close();
-		one.c.close();
+		"MESSAGE TEXT NOT NULL)";
+		stmt.executeUpdate(sql);
+		stmt.close();
+		cOther.close();
 		//System.out.println("Table has been created.");
 		
 	}catch(Exception e) {
@@ -156,7 +158,7 @@ public class chat {
 		}
 
 	}
-	
+	/*
 	public static void update(Table name) {
 		Scanner scnr = new Scanner(System.in);
 		String tableName = "accounts";
@@ -203,7 +205,7 @@ public class chat {
 				}
 				
 				else {
-					String updatePassword = "UPDATE accounts SET password = "+newPassword+" WHERE password = "+currPassword;
+					String updatePassword = "UPDATE accounts SET password = " +newPassword+" WHERE password = "+currPassword;
 					name.stmt.executeQuery(updatePassword);
 					System.out.println("Password changed!");
 					chatDisplay(name, tableName);
@@ -217,9 +219,90 @@ public class chat {
 		}
 		
 	}
+	*/
+	
+	public static void update(Table name) {
+		Scanner scnr = new Scanner(System.in);
+		String tableName = "accounts";
+		String column = "username";
+		
+		
+		try {
+			System.out.print("Change (U)sername or (P)assword: ");
+			String input = scnr.next();
+			
+			if (input.equals("U")) {
+				System.out.print("Enter your current username: ");
+				String currUser = scnr.next();
+				
+				System.out.print("Enter your new username(enter quit to leave): ");
+				String newUser = scnr.next();
+				
+				if (newUser.equals("quit")) {
+					chatDisplay(name, tableName);
+				}
+				
+				else if (name.duplicate(newUser, "accounts","username" )) {
+					System.out.println("Username already exists. Please choose a different username.");
+					update(name);
+				}
+				
+				else {
+					int idNum = name.number(currUser);
+					String preparedUpdate = "UPDATE accounts SET username = ? WHERE id = ? ";
+					
+					try(PreparedStatement prepstmt = name.c.prepareStatement(preparedUpdate)) {
+						prepstmt.setString(1, newUser);
+						prepstmt.setInt(2, idNum);
+						prepstmt.executeUpdate();
+					
+						
+					}catch(SQLException e) {
+						e.printStackTrace();
+					}
+					
+					System.out.println("Username changed!");
+					chatDisplay(name,tableName);
+				}
+				
+			}
+			
+			else if (input.equals("P")){
+				System.out.print("Enter your current password: ");
+				String currPassword = scnr.next();
+				
+				System.out.print("Enter your new password(enter quit to leave): ");
+				String newPassword = scnr.next();
+				
+				if (newPassword.equals("quit")) {
+					chatDisplay(name, tableName);
+				}
+				
+				else {
+					String updatePassword = "UPDATE accounts SET password = "+newPassword+" WHERE password = "+currPassword;
+					name.stmt.executeQuery(updatePassword);
+					System.out.println("Password changed!");
+					
+					
+					chatDisplay(name, tableName);
+				}
+			}
+			
+			else {
+				System.out.println("Incorrect input. Please enter \"U\" or \"P\".");
+				update(name);
+			}
+		}
+		
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 	//Possible error
-	public static void logOut(Table name) {
-		mainDisplay(name);
+	public static void logOut(Table Name) {
+		mainDisplay(Name);
 	}
 	
 		
