@@ -97,7 +97,7 @@ public class Table {
 		boolean exists = tableExists(this.c, "rooms");
 		
 		if(exists) {
-			System.out.println("This table already exists");
+		//	System.out.println("This table already exists");
 		}
 		else {
 			
@@ -110,7 +110,7 @@ public class Table {
 				this.stmt.executeUpdate(sql);
 				this.stmt.close();
 				//this.c.close();
-				System.out.println("Table has been created.");
+			//	System.out.println("Table has been created.");
 				
 			}catch(Exception e) {
 			
@@ -126,7 +126,7 @@ public class Table {
 		boolean exists = tableExists(this.c, "accounts");
 		
 		if(exists) {
-			System.out.println("This table already exists");
+			//System.out.println("This table already exists");
 		}
 		else {
 			
@@ -140,7 +140,7 @@ public class Table {
 				this.stmt.executeUpdate(sql);
 				this.stmt.close();
 				//this.c.close();
-				System.out.println("Table has been created.");
+				//System.out.println("Table has been created.");
 				
 			}catch(Exception e) {
 			

@@ -107,7 +107,7 @@ public class chat {
 	
 	}
 	
-	public static void chatDisplay(Table room, String table) throws SQLException{
+	public static void chatDisplay(Table room) throws SQLException{
 		Scanner scnr = new Scanner(System.in);
 		System.out.println("Please select from the following options:\n(J)Join, (C)Create, (A)Account, (L)Logout\n-----------------------------------------\n");
 		
@@ -119,7 +119,7 @@ public class chat {
 		}
 		else if(selection.equals("C")) {
 			room.Create();
-			chatDisplay(room, table);
+			chatDisplay(room);
 			
 		}
 		else if(selection.equals("A")) {
@@ -134,8 +134,7 @@ public class chat {
 	
 	public static void mainDisplay(Table name) throws SQLException {
 		
-		String tableOne = "accounts";
-		String tableTwo = "rooms";
+		//String tableTwo = "rooms";
 		
 		Scanner scnr = new Scanner(System.in);
 		
@@ -160,7 +159,7 @@ public class chat {
 		else if(input.equals("L")) {
 			
 			name.LoggingIn();
-			chatDisplay(name, tableTwo);
+			chatDisplay(name);
 
 		}
 		else if (input.equals("Q")) {
@@ -247,7 +246,7 @@ public class chat {
 				String newUser = scnr.next();
 				
 				if (newUser.equals("quit")) {
-					chatDisplay(name, tableName);
+					chatDisplay(name);
 				}
 				
 				else if (name.duplicate(newUser, "accounts","username" )) {
@@ -270,7 +269,7 @@ public class chat {
 					}
 					
 					System.out.println("Username changed!");
-					chatDisplay(name,tableName);
+					chatDisplay(name);
 				}
 				
 			}
@@ -281,7 +280,7 @@ public class chat {
 				String newPassword = scnr.next();
 				
 				if (newPassword.equals("quit")) {
-					chatDisplay(name, tableName);
+					chatDisplay(name);
 				}
 				
 				else {
@@ -293,7 +292,7 @@ public class chat {
 						prepstmt.setInt(2, idNum);
 						prepstmt.executeUpdate();
 						System.out.println("\nPassword changed!\n");
-						chatDisplay(name, tableName);
+						chatDisplay(name);
 						
 					
 						
