@@ -13,8 +13,7 @@ public class chat {
 		Table register = new Table();
 		
 		
-		String tableOne = "accounts";
-		String tableTwo = "rooms";
+		
 		
 		
 		
@@ -89,18 +88,26 @@ public class chat {
 	}
 	*/
 
-	
+	try {
 	System.out.println("Welcome to my chat room!!!");
 	System.out.println();
 	
 	mainDisplay(register);
 	
+	}catch(Exception e) {
+		
+		e.printStackTrace();
+		System.err.println(e.getClass().getName()+ ": " + e.getMessage());
+		System.exit(0);
+		
 	
+		
+	}
 	
 	
 	}
 	
-	public static void chatDisplay(Table room, String table) {
+	public static void chatDisplay(Table room, String table) throws SQLException{
 		Scanner scnr = new Scanner(System.in);
 		System.out.println("Please select from the following options:\n(J)Join, (C)Create, (A)Account, (L)Logout\n-----------------------------------------\n");
 		
@@ -111,7 +118,9 @@ public class chat {
 			room.Join();
 		}
 		else if(selection.equals("C")) {
-			room.Create(table);
+			room.Create();
+			chatDisplay(room, table);
+			
 		}
 		else if(selection.equals("A")) {
 			update(room);
@@ -123,7 +132,7 @@ public class chat {
 	}
 	
 	
-	public static void mainDisplay(Table name) {
+	public static void mainDisplay(Table name) throws SQLException {
 		
 		String tableOne = "accounts";
 		String tableTwo = "rooms";
@@ -144,7 +153,8 @@ public class chat {
 		
 		if(input.equals("R")) {
 			
-			name.Register(tableOne);
+			name.Register();
+			mainDisplay(name);
 				
 		}
 		else if(input.equals("L")) {
@@ -221,19 +231,17 @@ public class chat {
 	}
 	*/
 	
-	public static void update(Table name) {
+	public static void update(Table name) throws SQLException{
 		Scanner scnr = new Scanner(System.in);
 		String tableName = "accounts";
 		String column = "username";
 		
 		
-		try {
+		
 			System.out.print("Change (U)sername or (P)assword: ");
 			String input = scnr.next();
 			
 			if (input.equals("U")) {
-				System.out.print("Enter your current username: ");
-				String currUser = scnr.next();
 				
 				System.out.print("Enter your new username(enter quit to leave): ");
 				String newUser = scnr.next();
@@ -248,7 +256,7 @@ public class chat {
 				}
 				
 				else {
-					int idNum = name.number(currUser);
+					int idNum = name.number(name.getUsername());
 					String preparedUpdate = "UPDATE accounts SET username = ? WHERE id = ? ";
 					
 					try(PreparedStatement prepstmt = name.c.prepareStatement(preparedUpdate)) {
@@ -268,9 +276,7 @@ public class chat {
 			}
 			
 			else if (input.equals("P")){
-				System.out.print("Enter your current password: ");
-				String currPassword = scnr.next();
-				
+								
 				System.out.print("Enter your new password(enter quit to leave): ");
 				String newPassword = scnr.next();
 				
@@ -279,12 +285,22 @@ public class chat {
 				}
 				
 				else {
-					String updatePassword = "UPDATE accounts SET password = "+newPassword+" WHERE password = "+currPassword;
-					name.stmt.executeQuery(updatePassword);
-					System.out.println("Password changed!");
+					int idNum = name.number(name.getUsername());
+					String preparedUpdate = "UPDATE accounts SET password = ? WHERE id = ? ";
 					
+					try(PreparedStatement prepstmt = name.c.prepareStatement(preparedUpdate)) {
+						prepstmt.setString(1, newPassword);
+						prepstmt.setInt(2, idNum);
+						prepstmt.executeUpdate();
+						System.out.println("\nPassword changed!\n");
+						chatDisplay(name, tableName);
+						
 					
-					chatDisplay(name, tableName);
+						
+					}catch(SQLException e) {
+						e.printStackTrace();
+					}
+
 				}
 			}
 			
@@ -292,16 +308,11 @@ public class chat {
 				System.out.println("Incorrect input. Please enter \"U\" or \"P\".");
 				update(name);
 			}
-		}
 		
-		
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
 		
 	}
 	//Possible error
-	public static void logOut(Table Name) {
+	public static void logOut(Table Name) throws SQLException{
 		mainDisplay(Name);
 	}
 	

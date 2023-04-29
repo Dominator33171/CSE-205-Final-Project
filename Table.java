@@ -18,6 +18,9 @@ public class Table {
     private static HashMap<String, Boolean> users = new HashMap<>();
     
     private String username;
+    private String password;
+    private String room;
+    
 
 	
 	public Table() {
@@ -45,21 +48,40 @@ public class Table {
 	}
 	
 	
-	public void creatTable(String name) {
-		IF EXISTS 
-		Begin
-		END
+	public boolean tableExists(Connection c, String tableName) throws SQLException {
+		    boolean a = false;
+		    try (ResultSet rs = c.getMetaData().getTables(null, null, tableName, null)) {
+		        while (rs.next()) { 
+		            String name = rs.getString("TABLE_NAME");
+		            if (name != null && name.equals(tableName)) {
+		                a = true;
+		                System.out.println("Exists");
+		                break;
+		            }
+		        }
+		    }
+		    return a;
+		}
+	
+	public void createRoom(String tableName) throws SQLException {
+		boolean exists = tableExists(this.c, tableName);
 		
+		if(exists) {
+			System.out.println("This table already exists");
+		}
+		else {
+			
 		
 		try {
+			
 			this.stmt = this.c.createStatement();
-			String sql = "CREATE TABLE name" +
+			String sql = "CREATE TABLE " +tableName +
 			"(ID INT PRIMARY KEY NOT NULL," +
 			" USERNAME TEXT NOT NULL," +
-			"PASSWORD TEXT NOT NULL)";
+			"Message TEXT NOT NULL)";
 			this.stmt.executeUpdate(sql);
 			this.stmt.close();
-			this.c.close();
+			//this.c.close();
 			//System.out.println("Table has been created.");
 			
 		}catch(Exception e) {
@@ -68,8 +90,70 @@ public class Table {
 			System.err.println(e.getClass().getName()+ ": " + e.getMessage());
 			System.exit(0);
 		}
+		}
+	}
+	
+	public void createRoomsTable() throws SQLException {
+		boolean exists = tableExists(this.c, "rooms");
+		
+		if(exists) {
+			System.out.println("This table already exists");
+		}
+		else {
+			
+		
+			try {
+				this.stmt = this.c.createStatement();
+				String sql = "CREATE TABLE ROOMS" +
+				"(ID INT PRIMARY KEY NOT NULL," +
+				" ROOM TEXT NOT NULL)";
+				this.stmt.executeUpdate(sql);
+				this.stmt.close();
+				//this.c.close();
+				System.out.println("Table has been created.");
+				
+			}catch(Exception e) {
+			
+				e.printStackTrace();
+				System.err.println(e.getClass().getName()+ ": " + e.getMessage());
+				System.exit(0);
+			}
+
+		}
+	}
+	
+	public void createAccountsTable() throws SQLException {
+		boolean exists = tableExists(this.c, "accounts");
+		
+		if(exists) {
+			System.out.println("This table already exists");
+		}
+		else {
+			
+		
+			try {
+				this.stmt = this.c.createStatement();
+				String sql = "CREATE TABLE ACCOUNTS" +
+						"(ID INT PRIMARY KEY NOT NULL," +
+						" USERNAME TEXT NOT NULL," +
+						"PASSWORD TEXT NOT NULL)";
+				this.stmt.executeUpdate(sql);
+				this.stmt.close();
+				//this.c.close();
+				System.out.println("Table has been created.");
+				
+			}catch(Exception e) {
+			
+				e.printStackTrace();
+				System.err.println(e.getClass().getName()+ ": " + e.getMessage());
+				System.exit(0);
+			}
+
+		}
 	}
 
+	
+	
 		public int counter(String table) {
 				
 				try {
@@ -87,8 +171,11 @@ public class Table {
 				}
 			}
 		
-		public void Register(String table) {
+		public void Register() throws SQLException{
+			
+			createAccountsTable();
 			String column = "username";
+			String table = "accounts";
 			
 			String insert = "INSERT INTO accounts VALUES (?, ?, ?)";
 			
@@ -118,7 +205,7 @@ public class Table {
 					System.out.println("Username already exists.\nPlease enter a different username.");
 					
 					System.out.println();
-					Register(table);
+					Register();
 				}
 				
 			} catch (SQLException e) {
@@ -150,9 +237,10 @@ public class Table {
 			return a;
 		}
 		
-		public void LoggingIn() {
-			try {
+		public void LoggingIn() throws SQLException {
+			createAccountsTable();
 			
+			try {
 			String password = null;
 			String table = "accounts";
 			String column = "username";
@@ -184,7 +272,9 @@ public class Table {
 
 				if(password.equals(correctPassword)) {
 							System.out.println("\nWelcome " + this.username + "!!!");
+							this.password = password;
 							System.out.println();
+							
 						}
 						else {
 							System.out.println("Password is incorrect.\nPlease try again.");
@@ -205,11 +295,19 @@ public class Table {
 				
 			}
 	}
+		
+		public String getUsername() {
+			return this.username;
+		}
+		
+		public String getPassword() {
+			return this.password;
+		}
 		//Inserts a new name for a chat room that only contains lower case letters and numbers.
 		//It only inserts names for chat rooms that are not already found in the table, rooms.
-		public void Create(String table) {
+		public void Create() {
 			
-			
+			String table = "rooms";
 			String insert = "INSERT INTO " +table+ " VALUES (?, ?)";
 			String column = "room";
 			
@@ -234,20 +332,22 @@ public class Table {
 					
 						prepStmt.executeUpdate();
 						System.out.println();
-						System.out.println("Sucessfully created new chat room.\nWelecome to " + name + "!!!");
+						System.out.println("Sucessfully created new chat room.");
 						System.out.println();
+						
 					}
 					else {
 						System.out.println();
 						System.out.println("This chat room already exists.");
 						
 						System.out.println();
-						Create(table);
+						Create();
+						
 					}
 				}
 				else {
 					System.out.println("\nThe chat room name does not meet the criteria.\n");	
-					Create(table);
+					Create();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -301,7 +401,14 @@ public class Table {
 				
 				System.out.println("\nWelcome to the chat room called " + name + "!!!\n");
 				System.out.println("You are now viewing this chat window: " + name + "\n");
-				chatFeature(this.username, "history");
+				this.room = name;
+				
+				createRoom(name);
+
+				chatFeature(this.username, name);
+				
+				
+				
 	            
 	        }
 	    
@@ -316,6 +423,11 @@ public class Table {
 				
 			}
 	}
+		
+		
+		public String getRoom() {
+			return this.room;
+		}
 		public void chatFeature(String name, String table) {
 			//Check if the message is a command
 			System.out.print(name + ": ");
@@ -338,7 +450,7 @@ public class Table {
                 }
                 */
                 
-                String insert = "INSERT INTO history VALUES (?, ?, ?)";
+                String insert = "INSERT INTO "+getRoom()+" VALUES (?, ?, ?)";
     			
     			try(PreparedStatement prepStmt = this.c.prepareStatement(insert)){
     				
@@ -359,7 +471,7 @@ public class Table {
     			}
     			
     			
-                chatFeature(name, "history");
+                chatFeature(name, getRoom());
             }
 		}
 
@@ -372,7 +484,7 @@ public class Table {
 	            try {
 					
 					this.stmt = this.c.createStatement();
-					this.resultSet = this.stmt.executeQuery("SELECT * FROM history");
+					this.resultSet = this.stmt.executeQuery("SELECT * FROM " +getRoom());
 					
 					while( resultSet.next()) {
 						int id = resultSet.getInt("id");
@@ -413,7 +525,7 @@ public class Table {
 	            try {
 					
 					this.stmt = this.c.createStatement();
-					this.resultSet = this.stmt.executeQuery("SELECT * FROM history");
+					this.resultSet = this.stmt.executeQuery("SELECT * FROM " + getRoom());
 					
 					while( resultSet.next()) {
 						int id = resultSet.getInt("id");
