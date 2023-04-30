@@ -1,3 +1,5 @@
+package finalPrijects;
+
 import java.util.Arrays;
 import java.net.*;
 import java.io.*;
@@ -39,8 +41,8 @@ public class Table {
 		try {
 			Class.forName("org.postgresql.Driver");
 			c = DriverManager.getConnection(
-					"jdbc:postgresql://localhost:5432/usersdb",
-					"postgres","postgres");
+					"jdbc:postgresql://localhost:5432/test",
+					"postgres","luisru8202");
 			System.out.println("Connected to the database.");
 		}catch(Exception e) {
 		
