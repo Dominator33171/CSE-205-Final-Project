@@ -1,8 +1,9 @@
 import java.util.Arrays;
+import java.net.*;
+import java.io.*;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.sql.*;
-import java.util.*;
 
 public class Table {
 	Scanner scnr = new Scanner(System.in);
@@ -15,11 +16,16 @@ public class Table {
 			"1", "2", "3","4","5","6","7","8","9","10"};
 	
 	private static ArrayList<String> chatHistory = new ArrayList<>();
-    private static HashMap<String, Boolean> users = new HashMap<>();
+    //private static HashMap<String, Boolean> users = new HashMap<>();
     
     private String username;
     private String password;
     private String room;
+    
+    private static final String TERMINATE = "Exit";
+    public static String Name;
+    static volatile boolean finished = false;
+    
     
 
 	
@@ -55,7 +61,6 @@ public class Table {
 		            String name = rs.getString("TABLE_NAME");
 		            if (name != null && name.equals(tableName)) {
 		                a = true;
-		                System.out.println("Exists");
 		                break;
 		            }
 		        }
@@ -66,10 +71,7 @@ public class Table {
 	public void createRoom(String tableName) throws SQLException {
 		boolean exists = tableExists(this.c, tableName);
 		
-		if(exists) {
-			System.out.println("This table already exists");
-		}
-		else {
+		if(!exists) {
 			
 		
 		try {
@@ -81,8 +83,7 @@ public class Table {
 			"Message TEXT NOT NULL)";
 			this.stmt.executeUpdate(sql);
 			this.stmt.close();
-			//this.c.close();
-			//System.out.println("Table has been created.");
+			
 			
 		}catch(Exception e) {
 		
@@ -96,11 +97,7 @@ public class Table {
 	public void createRoomsTable() throws SQLException {
 		boolean exists = tableExists(this.c, "rooms");
 		
-		if(exists) {
-		//	System.out.println("This table already exists");
-		}
-		else {
-			
+		if(!exists) {
 		
 			try {
 				this.stmt = this.c.createStatement();
@@ -109,8 +106,7 @@ public class Table {
 				" ROOM TEXT NOT NULL)";
 				this.stmt.executeUpdate(sql);
 				this.stmt.close();
-				//this.c.close();
-			//	System.out.println("Table has been created.");
+				
 				
 			}catch(Exception e) {
 			
@@ -125,11 +121,8 @@ public class Table {
 	public void createAccountsTable() throws SQLException {
 		boolean exists = tableExists(this.c, "accounts");
 		
-		if(exists) {
-			//System.out.println("This table already exists");
-		}
-		else {
-			
+		if(!exists) {
+					
 		
 			try {
 				this.stmt = this.c.createStatement();
@@ -139,9 +132,7 @@ public class Table {
 						"PASSWORD TEXT NOT NULL)";
 				this.stmt.executeUpdate(sql);
 				this.stmt.close();
-				//this.c.close();
-				//System.out.println("Table has been created.");
-				
+								
 			}catch(Exception e) {
 			
 				e.printStackTrace();
@@ -405,7 +396,7 @@ public class Table {
 				
 				createRoom(name);
 
-				chatFeature(this.username, name);
+				chatFeature();
 				
 				
 				
@@ -428,57 +419,140 @@ public class Table {
 		public String getRoom() {
 			return this.room;
 		}
-		public void chatFeature(String name, String table) {
-			//Check if the message is a command
-			System.out.print(name + ": ");
-			String message = scnr.next();
+		
+		
+		public ArrayList<String> inputCheck() {
+			ArrayList<String> list = new ArrayList<String>();
+			try {
+				
+				this.stmt = this.c.createStatement();
+				this.resultSet = this.stmt.executeQuery("SELECT * FROM " + getRoom());
+				
+				while( resultSet.next()) {
+					int id = resultSet.getInt("id");
+					String nameOther = resultSet.getString("username");
+					String input = resultSet.getString("message");
+					
+					list.add(nameOther + ": " + input);
+					
+					
+				
 			
-			 users.put(name, true);
-            if (message.startsWith("/")) {
-                handleCommand(name, message);
-            } else {
-                // Add the message to the chat history
-                chatHistory.add(name + ": " + message);
-                
+									
+				}
+				return list;
+				}catch(Exception e) {
+					e.printStackTrace();
+					return list;
+					
+				}
+			
 
-                // Print the message to all users in the chat room
-                /*
-                for (String user : users.keySet()) {
-                    if (users.get(user)) {
-                        System.out.println(name + ": " + message);
-                    }
-                }
-                */
-                
-                String insert = "INSERT INTO "+getRoom()+" VALUES (?, ?, ?)";
-    			
-    			try(PreparedStatement prepStmt = this.c.prepareStatement(insert)){
-    				
-    				int count = counter(table);
-    				
-    				
-
-    					prepStmt.setInt(1, count);
-    					prepStmt.setString(2, this.username);
-    					prepStmt.setString(3, message);
-    				
-    					prepStmt.executeUpdate();
-    				
-    				
-    				    				
-    			} catch (SQLException e) {
-    				e.printStackTrace();
-    			}
-    			
-    			
-                chatFeature(name, getRoom());
-            }
 		}
+		
+		
+		public void chatFeature() {
+						
+			Scanner scnr = new Scanner(System.in);
+			ArrayList<String> list = inputCheck();
+			
+			int count = counter(getRoom());	
+			int i = count ;
+			
+					
+
+			
+			    while(true) {
+			    	 System.out.print(this.username + ": ");
+			    	 
+					 String message = scnr.nextLine();
+                 
+			    				    	
+
+    				 
+    				 
+    				 
+    				 try {
+							
+							this.stmt = this.c.createStatement();
+							this.resultSet = this.stmt.executeQuery("SELECT * FROM " + getRoom());
+							
+							while( resultSet.next()) {
+								int id = resultSet.getInt("id");
+								String nameOther = resultSet.getString("username");
+								String input = resultSet.getString("message");
+								
+								if(id>i && (!nameOther.equals(getUsername()))) {
+									
+									System.out.println(nameOther + ": " + input);
+									
+
+								}
+												
+							}
+							i = counter(getRoom()) ;
+							}catch(Exception e) {
+								e.printStackTrace();
+								
+							}
+    				
+    				 
+    				 
+    			    				
+    				 
+    				 
+    				 
+    				
+
+    				 if (message.startsWith("/")) {
+    					 
+    					 	ArrayList<String> otherList = new ArrayList<String>();
+    					 	list = otherList;
+    		                handleCommand(getUsername(), message);
+    		                break;
+    		                
+    		                
+    		            } else {
+    		            	    	                
+    	                String insert = "INSERT INTO "+getRoom()+" VALUES (?, ?, ?)";
+    	                
+
+    	    			try(PreparedStatement prepStmt = this.c.prepareStatement(insert)){
+    	    				
+    	    				
+    	    				
+
+    	    					prepStmt.setInt(1, counter(getRoom()));
+    	    					prepStmt.setString(2, this.username);
+    	    					prepStmt.setString(3, message);
+    	    					
+    	    					list.add(this.username + ": " + message);
+    	    				
+    	    					prepStmt.executeUpdate();
+    	    				
+    	    					
+    	    						
+    	                        
+
+    	    				    				
+    	    			} catch (SQLException e) {
+    	    				e.printStackTrace();
+    	    			}
+    	    			
+    	    			    		            }
+                 }
+
+    	            
+		}
+		
+                         
+		
 
 		public void handleCommand(String username, String command) {
 	        if (command.equals("/list")) {
 	            // Print a list of users currently in the chat room
-	            System.out.println("Users in this chat room:");
+	        	ArrayList<String> allUsers = new ArrayList<String>();
+	            System.out.println("\n\nUsers in this chat room:\n");
 	            
 	            
 	            try {
@@ -487,40 +561,40 @@ public class Table {
 					this.resultSet = this.stmt.executeQuery("SELECT * FROM " +getRoom());
 					
 					while( resultSet.next()) {
-						int id = resultSet.getInt("id");
 						String name = resultSet.getString("username");
-						String input = resultSet.getString("message");
 						
 						
 						
-						boolean a = false;
-						for(int i = 0; i < chatHistory.size(); i++) {
-							if(i!= 0 && chatHistory.get(i).equals(chatHistory.get(i-1))) {
+						boolean a = true;
+						for(int i = 0; i < allUsers.size(); ++i) {
+							if(name.equals(allUsers.get(i))) {
 								a = false;
 							}
 						}
 						if(a == true) {
-							chatHistory.add(resultSet.getString("username"));
+							allUsers.add(resultSet.getString("username"));
 						}
 										
 					}
-					for(int i = 0; i < chatHistory.size(); i++) {
-						System.out.println(chatHistory.get(i));
+					for(int i = 0; i < allUsers.size(); i++) {
+						System.out.println(allUsers.get(i));
 					}
 	            }
 					catch(Exception e) {
 						e.printStackTrace();
 						
 					}
+	            System.out.println();
+	            chatFeature();
 		
 	        }
 	         else if (command.equals("/leave")) {
 	            // Remove the user from the chat room
-	            users.put(username, false);
+	          //  users.put(username, false);
 	            System.out.println("You have left the chat room.");
 	        } else if (command.equals("/history")) {
 	            // Print all past messages for the chat room
-	        	System.out.println("\nChat history: \n");
+	        	System.out.println("\n\nChat history: \n");
 	            	            
 	            try {
 					
@@ -539,48 +613,25 @@ public class Table {
 						e.printStackTrace();
 						
 					}
+	            System.out.println("\n");
+	            chatFeature();
 
 	        } else if (command.equals("/help")) {
 	            // Print the list of available commands
-	            System.out.println("Available commands:");
+	            System.out.println("\n\nAvailable commands:\n");
 	            System.out.println("/list - Returns a list of users currently in this chat room.");
 	            System.out.println("/leave - Exits the chat room.");
 	            System.out.println("/history - Prints all past messages for the chat room.");
-	            System.out.println("/help - Prints the list of available commands.");
+	            System.out.println("/help - Prints the list of available commands.\n\n");
+	            
+	            chatFeature();
 	        } else {
 	            // Invalid command
-	            System.out.println("Invalid command. Type /help for a list of available commands.");
+	            System.out.println("\nInvalid command. Type /help for a list of available commands.\n");
+	            chatFeature();
 	        }
 	    }
-		/*
-		public void updatePart(String name) {
-			String update1 = "UPDATE accounts SET username = ? WHERE id = ? ";
-			
-			try(PreparedStatement result = c.prepareStatement(update1)){
-				result.setString(id: 0, username: "other");
-				
-			}catch(SQLException e) {
-				e.printStackTrace();
-			}
-			
-			try(stmt = c.Statement(update1)){
-				
-				String test = "test";
-				String pass = "temp";
-				
-				
-				prepStmt.setInt(1, 11);
-				prepStmt.setString(2, test);
-				prepStmt.setString(3, pass);
-				
-				prepStmt.executeUpdate();
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-
-		}
-		*/
+		
 		public int number(String input) {
 			int count = 0;
 			try {
