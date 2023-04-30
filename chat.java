@@ -35,6 +35,8 @@ public class chat {
 	
 	}
 	
+	
+	//The otpions Join, Create, Account and Logout are provided to the user and are then redirected to the correct display. 
 	public static void chatDisplay(Table room) throws SQLException{
 		Scanner scnr = new Scanner(System.in);
 		System.out.println("Please select from the following options:\n(J)Join, (C)Create, (A)Account, (L)Logout\n-----------------------------------------\n");
@@ -66,7 +68,7 @@ public class chat {
 		}
 	}
 	
-	
+	//The mainDisplay gives the user the option to Register, Login and Quit. 
 	public static void mainDisplay(Table name) throws SQLException {
 		
 		
@@ -104,7 +106,7 @@ public class chat {
 
 	}
 	
-	
+	//The Update method allows the user to change their username and password. 
 	public static void update(Table name) throws SQLException{
 		Scanner scnr2 = new Scanner(System.in);
 		
@@ -191,7 +193,7 @@ public class chat {
 	}
 	
 	
-	//Possible error
+	//The logOut method takes the user back to the first display (before the user was logged in) which is the mainDisplay. 
 	public static void logOut(Table Name) throws SQLException{
 		mainDisplay(Name);
 		

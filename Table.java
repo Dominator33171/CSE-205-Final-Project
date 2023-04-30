@@ -22,12 +22,12 @@ public class Table {
     private String room;
     
     
-    public static String Name;
-    static volatile boolean finished = false;
-    
+   
+   
     
 
 	
+    //This method connects the user to the database, usersdb.
 	public Table() {
 		this.c = null;
 		this.stmt = null;
@@ -52,7 +52,8 @@ public class Table {
 
 	}
 	
-	
+	//This method checks if the table within the database, usersdb, already exists. Returns true if it does and false otherwise.
+	//https://stackoverflow.com/questions/2942788/check-if-table-exists
 	public boolean tableExists(Connection c, String tableName) throws SQLException {
 		    boolean a = false;
 		    try (ResultSet rs = c.getMetaData().getTables(null, null, tableName, null)) {
@@ -67,6 +68,9 @@ public class Table {
 		    return a;
 		}
 	
+	//This method creates a table each time a new chat room is created. This allows the the user's input to be saved even if it crashes.
+	//The table is given the name of the chat room decided by the user.
+	//The table is only created if it does not already exist within the usersdb database.
 	public void createRoom(String tableName) throws SQLException {
 		boolean exists = tableExists(this.c, tableName);
 		
@@ -93,6 +97,8 @@ public class Table {
 		}
 	}
 	
+	
+	//This created the table called, "Rooms," that stores all the names of the chat rooms so far created.
 	public void createRoomsTable() throws SQLException {
 		boolean exists = tableExists(this.c, "rooms");
 		
@@ -117,6 +123,8 @@ public class Table {
 		}
 	}
 	
+	//This method creates a table called, "accounts," that holds all the usernames and passwords.
+	//The accounts table is only created if it does not already exist.
 	public void createAccountsTable() throws SQLException {
 		boolean exists = tableExists(this.c, "accounts");
 		
@@ -143,7 +151,7 @@ public class Table {
 	}
 
 	
-	
+	//The counter returns the total number of elements from the table and returns the integer.
 		public int counter(String table) {
 				
 				try {
@@ -161,6 +169,8 @@ public class Table {
 				}
 			}
 		
+		
+		//The Register method adds the new username along with its password to the accounts table if the username does not already exist within the table.
 		public void Register() throws SQLException{
 			
 			createAccountsTable();
@@ -204,6 +214,7 @@ public class Table {
 			
 		}
 		
+		//The duplicate method checks if the same String exists within that table's column and returns true if it does and false otherwise.
 		public boolean duplicate(String name, String table, String column) {
 			boolean a = false;
 			try {
@@ -227,6 +238,9 @@ public class Table {
 			return a;
 		}
 		
+		
+		//This checks if the user inputted the correct username along with its password.
+		//The username along with its password should already exist within the accounts table.
 		public void LoggingIn() throws SQLException {
 			createAccountsTable();
 			
@@ -288,23 +302,31 @@ public class Table {
 			}
 	}
 		
+		//This method returns the user's current username.
 		public String getUsername() {
 			return this.username;
 		}
 		
+		//This method changes the user's current username.
 		public void setUsername(String name) {
 			this.username = name;
 		}
 		
+		//This method returns the user's current password.
 		public String getPassword() {
 			return this.password;
 		}
 		
+		//This method changes the user's current password.
 		public void setPassword(String password) {
 			this.password = password;
 		}
-		//Inserts a new name for a chat room that only contains lower case letters and numbers.
+		
+		
+		
+		//The Create method inserts a String into the column, room, of the rooms table when the user inputs a chat room name that only contains lower case letters and numbers.
 		//It only inserts names for chat rooms that are not already found in the table, rooms.
+		//It creates a table that has the name of the chat room that was added to the rooms table.
 		public void Create() {
 			
 			String table = "rooms";
@@ -391,7 +413,10 @@ public class Table {
 			
 			return b;
 		}
-
+		
+		
+		//The Join method allows the user to join a chat room by entering the name of a chat room that exists within the rooms table.
+		//This method then calls the chatFeature method in order to allow the user to add messages to the table that has the name of the chat room that they selected.
 		public void Join() {
 			try {
 			String name = null; 
@@ -430,12 +455,13 @@ public class Table {
 			}
 	}
 		
-		
+		//This returns the name of the current chat room that the user is currently typing in.
 		public String getRoom() {
 			return this.room;
 		}
 		
 		
+		//This checks if another user has added messages to the current table that the user is entering messages in.
 		public ArrayList<String> inputCheck() {
 			ArrayList<String> list = new ArrayList<String>();
 			try {
@@ -465,7 +491,9 @@ public class Table {
 
 		}
 		
-		
+		//This adds all the users messages into the current chat room table that they joined.
+		//It outputs messages from all the users that are currently joined to the same chat room.
+		//It calls the handleCommand method when a user enters a message that begins with a backslash. 
 		public void chatFeature() {
 						
 			Scanner scnr = new Scanner(System.in);
@@ -562,12 +590,12 @@ public class Table {
 		
                          
 		
-
+		//This method executes each command entered by the user. Each command starts with a backslash.
 		public void handleCommand(String username, String command) {
 	        if (command.equals("/list")) {
 	            // Print a list of users currently in the chat room
 	        	ArrayList<String> allUsers = new ArrayList<String>();
-	            System.out.println("\n\nUsers in this chat room:\n");
+	            System.out.println("\n\nUsers in this chat room:");
 	            
 	            
 	            try {
@@ -609,7 +637,7 @@ public class Table {
 	            System.out.println("\nYou have left the chat room.\n");
 	        } else if (command.equals("/history")) {
 	            // Print all past messages for the chat room
-	        	System.out.println("\n\nChat history: \n");
+	        	System.out.println("\n\nChat history: ");
 	            	            
 	            try {
 					
@@ -633,7 +661,7 @@ public class Table {
 
 	        } else if (command.equals("/help")) {
 	            // Print the list of available commands
-	            System.out.println("\n\nAvailable commands:\n");
+	            System.out.println("\n\nAvailable commands:");
 	            System.out.println("/list - Returns a list of users currently in this chat room.");
 	            System.out.println("/leave - Exits the chat room.");
 	            System.out.println("/history - Prints all past messages for the chat room.");
@@ -647,6 +675,7 @@ public class Table {
 	        }
 	    }
 		
+		//This returns the current id number that the user is on within the accounts table.
 		public int number(String input) {
 			int count = 0;
 			try {
