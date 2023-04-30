@@ -15,7 +15,7 @@ public class chat {
 				
 	
 	try {
-	register.c.close();
+	
 
 	System.out.println("Welcome to my chat room!!!");
 	System.out.println();
