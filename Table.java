@@ -13,16 +13,15 @@ public class Table {
 	
 	String letters[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", 
 			"l", "m","n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 
-			"1", "2", "3","4","5","6","7","8","9","10"};
+			"1", "2", "3","4","5","6","7","8","9","0"};
 	
-	private static ArrayList<String> chatHistory = new ArrayList<>();
-    //private static HashMap<String, Boolean> users = new HashMap<>();
+	
     
     private String username;
     private String password;
     private String room;
     
-    private static final String TERMINATE = "Exit";
+    
     public static String Name;
     static volatile boolean finished = false;
     
@@ -175,7 +174,7 @@ public class Table {
 				int count = counter(table);
 				
 				System.out.print("Username: ");
-				this.username = scnr.next();
+				this.username = scnr.nextLine();
 				
 							
 				if(duplicate(this.username, table, column)==false) {
@@ -231,13 +230,15 @@ public class Table {
 		public void LoggingIn() throws SQLException {
 			createAccountsTable();
 			
+			
 			try {
+			Scanner scnr = new Scanner(System.in);
 			String password = null;
 			String table = "accounts";
 			String column = "username";
 			
 			System.out.print("Username: ");
-			this.username = scnr.next();
+			this.username = scnr.nextLine();
 			
 					
 			if(duplicate(this.username, table,column )==true) {
@@ -268,7 +269,7 @@ public class Table {
 							
 						}
 						else {
-							System.out.println("Password is incorrect.\nPlease try again.");
+							System.out.println("\nPassword is incorrect.\nPlease try again.");
 							System.out.println();
 							LoggingIn();
 						}
@@ -291,8 +292,16 @@ public class Table {
 			return this.username;
 		}
 		
+		public void setUsername(String name) {
+			this.username = name;
+		}
+		
 		public String getPassword() {
 			return this.password;
+		}
+		
+		public void setPassword(String password) {
+			this.password = password;
 		}
 		//Inserts a new name for a chat room that only contains lower case letters and numbers.
 		//It only inserts names for chat rooms that are not already found in the table, rooms.
@@ -302,15 +311,20 @@ public class Table {
 			String insert = "INSERT INTO " +table+ " VALUES (?, ?)";
 			String column = "room";
 			
+			Scanner scnr = new Scanner(System.in);
+			
 			try(PreparedStatement prepStmt = this.c.prepareStatement(insert)){
 				
 				int count = counter(table);
 				
 				System.out.print("Please name the chat room.\nThe name can only contain lower case letters and numbers.");
 				System.out.println("\n-----------------------------------------");
+				
 				System.out.print("\nName: ");
+				
+				
 
-				String name = scnr.next();
+				String name = scnr.nextLine();
 				
 				if(criteria(name)==true) {
 				
@@ -365,6 +379,7 @@ public class Table {
 							
 						}
 						
+						
 					}
 			}
 			if(Arrays.equals(arr, other)) {
@@ -390,7 +405,7 @@ public class Table {
 					
 			if(duplicate(name, table, column)==true) {
 				
-				System.out.println("\nWelcome to the chat room called " + name + "!!!\n");
+				System.out.println("\nWelcome to the chat room called " + name + "!!!");
 				System.out.println("You are now viewing this chat window: " + name + "\n");
 				this.room = name;
 				
@@ -429,7 +444,7 @@ public class Table {
 				this.resultSet = this.stmt.executeQuery("SELECT * FROM " + getRoom());
 				
 				while( resultSet.next()) {
-					int id = resultSet.getInt("id");
+					
 					String nameOther = resultSet.getString("username");
 					String input = resultSet.getString("message");
 					
@@ -526,7 +541,7 @@ public class Table {
     	    					prepStmt.setString(2, this.username);
     	    					prepStmt.setString(3, message);
     	    					
-    	    					list.add(this.username + ": " + message);
+    	    					list.add(getUsername() + ": " + message);
     	    				
     	    					prepStmt.executeUpdate();
     	    				
@@ -577,7 +592,7 @@ public class Table {
 										
 					}
 					for(int i = 0; i < allUsers.size(); i++) {
-						System.out.println(allUsers.get(i));
+						System.out.println("-" +allUsers.get(i));
 					}
 	            }
 					catch(Exception e) {
@@ -591,7 +606,7 @@ public class Table {
 	         else if (command.equals("/leave")) {
 	            // Remove the user from the chat room
 	          //  users.put(username, false);
-	            System.out.println("You have left the chat room.");
+	            System.out.println("\nYou have left the chat room.\n");
 	        } else if (command.equals("/history")) {
 	            // Print all past messages for the chat room
 	        	System.out.println("\n\nChat history: \n");
@@ -602,11 +617,11 @@ public class Table {
 					this.resultSet = this.stmt.executeQuery("SELECT * FROM " + getRoom());
 					
 					while( resultSet.next()) {
-						int id = resultSet.getInt("id");
+						
 						String name = resultSet.getString("username");
 						String input = resultSet.getString("message");
 						
-						System.out.println(name + ": " + input);
+						System.out.println("-"+name + ": " + input);
 										
 					}
 					}catch(Exception e) {

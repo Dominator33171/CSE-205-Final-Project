@@ -44,6 +44,7 @@ public class chat {
 		System.out.println();
 		if(selection.equals("J")) {
 			room.Join();
+			chatDisplay(room);
 		}
 		else if(selection.equals("C")) {
 			room.Create();
@@ -58,6 +59,10 @@ public class chat {
 		
 		logOut(room);
 		
+		}
+		else {
+			System.out.println("Entry is not valid. Please try again.\n");
+			chatDisplay(room);
 		}
 	}
 	
@@ -93,32 +98,33 @@ public class chat {
 		}
 		else if (input.equals("Q")) {
 			logOut(name);
-			name.c.close();
+			
+			
 		}
 
 	}
 	
 	
 	public static void update(Table name) throws SQLException{
-		Scanner scnr = new Scanner(System.in);
+		Scanner scnr2 = new Scanner(System.in);
 		
 		
 		
 		
 			System.out.print("Change (U)sername or (P)assword: ");
-			String input = scnr.next();
+			String input = scnr2.nextLine();
 			
 			if (input.equals("U")) {
 				
 				System.out.print("Enter your new username(enter quit to leave): ");
-				String newUser = scnr.next();
+				String newUser = scnr2.nextLine();
 				
 				if (newUser.equals("quit")) {
 					chatDisplay(name);
 				}
 				
 				else if (name.duplicate(newUser, "accounts","username" )) {
-					System.out.println("Username already exists. Please choose a different username.");
+					System.out.println("\nUsername already exists. Please choose a different username.\n");
 					update(name);
 				}
 				
@@ -130,13 +136,15 @@ public class chat {
 						prepstmt.setString(1, newUser);
 						prepstmt.setInt(2, idNum);
 						prepstmt.executeUpdate();
+						
+						
 					
 						
 					}catch(SQLException e) {
 						e.printStackTrace();
 					}
-					
-					System.out.println("Username changed!");
+					name.setUsername(newUser);
+					System.out.println("\nUsername changed!\n");
 					chatDisplay(name);
 				}
 				
@@ -145,9 +153,10 @@ public class chat {
 			else if (input.equals("P")){
 								
 				System.out.print("Enter your new password(enter quit to leave): ");
-				String newPassword = scnr.next();
+				String newPassword = scnr2.nextLine();
 				
 				if (newPassword.equals("quit")) {
+					System.out.println();
 					chatDisplay(name);
 				}
 				
@@ -167,12 +176,14 @@ public class chat {
 					}catch(SQLException e) {
 						e.printStackTrace();
 					}
+					
+					name.setPassword(newPassword);
 
 				}
 			}
 			
 			else {
-				System.out.println("Incorrect input. Please enter \"U\" or \"P\".");
+				System.out.println("\nIncorrect input. Please enter \"U\" or \"P\".\n");
 				update(name);
 			}
 		
