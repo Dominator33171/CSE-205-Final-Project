@@ -172,7 +172,7 @@ public class Table {
 		
 		//The Register method adds the new username along with its password to the accounts table if the username does not already exist within the table.
 		public void Register() throws SQLException{
-			
+			createRoomsTable();
 			createAccountsTable();
 			String column = "username";
 			String table = "accounts";
@@ -242,6 +242,7 @@ public class Table {
 		//This checks if the user inputted the correct username along with its password.
 		//The username along with its password should already exist within the accounts table.
 		public void LoggingIn() throws SQLException {
+			createRoomsTable();
 			createAccountsTable();
 			
 			
@@ -447,7 +448,7 @@ public class Table {
 			else {
 				System.out.println("\nChat room does not exist or name was not entered correctly.\n");
 				System.out.println();
-				Join();
+				
 			}
 			}catch(Exception e) {
 				e.printStackTrace();
