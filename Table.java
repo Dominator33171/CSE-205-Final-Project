@@ -1,5 +1,3 @@
-package finalPrijects;
-
 import java.util.Arrays;
 import java.net.*;
 import java.io.*;
@@ -41,8 +39,8 @@ public class Table {
 		try {
 			Class.forName("org.postgresql.Driver");
 			c = DriverManager.getConnection(
-					"jdbc:postgresql://localhost:5432/test",
-					"postgres","luisru8202");
+					"jdbc:postgresql://localhost:5432/usersdb",
+					"postgres","postgres");
 			System.out.println("Connected to the database.");
 		}catch(Exception e) {
 		
@@ -174,7 +172,7 @@ public class Table {
 		
 		//The Register method adds the new username along with its password to the accounts table if the username does not already exist within the table.
 		public void Register() throws SQLException{
-			
+			createRoomsTable();
 			createAccountsTable();
 			String column = "username";
 			String table = "accounts";
@@ -244,6 +242,7 @@ public class Table {
 		//This checks if the user inputted the correct username along with its password.
 		//The username along with its password should already exist within the accounts table.
 		public void LoggingIn() throws SQLException {
+			createRoomsTable();
 			createAccountsTable();
 			
 			
