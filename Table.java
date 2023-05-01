@@ -448,7 +448,7 @@ public class Table {
 			else {
 				System.out.println("\nChat room does not exist or name was not entered correctly.\n");
 				System.out.println();
-				Join();
+				
 			}
 			}catch(Exception e) {
 				e.printStackTrace();
